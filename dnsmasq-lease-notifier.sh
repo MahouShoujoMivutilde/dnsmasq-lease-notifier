@@ -8,6 +8,10 @@
 # - choose
 # - gotify/cli (opt)
 
+set -e
+
+
+
 nmapdb="${DNS_LEASE_WATCHER_NMAP_DB:-/usr/share/nmap/nmap-mac-prefixes}"
 
 # curl http://standards-oui.ieee.org/oui/oui.txt | sudo tee /usr/local/share/oui.txt
@@ -78,7 +82,8 @@ process() {
 
 journalctl -f -u dnsmasq |
     # ignores known hosts
-    rg 'DHCPACK.+ \d+\.\d+\.\d+\.\d+\s([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$' |
+    rg --line-buffered 'DHCPACK.+ \d+\.\d+\.\d+\.\d+\s([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$' |
     while read -r unknown; do
+        echo "$unknown"
         process "$unknown"
     done
