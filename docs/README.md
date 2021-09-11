@@ -2,6 +2,8 @@
 
 Is a daemon that watches dnsmasq log for `DHCPACK` for unknown hosts and notifies you via [gotify](https://gotify.net).
 
+<img src="gotify.png" width="400">
+
 ## Dependencies:
 * [choose](https://github.com/theryangeary/choose)
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
@@ -66,12 +68,3 @@ In short:
 2. in its webui create `dnsmasq watcher` app for your user, get its auth token
 3. setup [gotify/cli](https://github.com/gotify/cli) with said token on your dnsmasq server
 4. login in gotify on your phone
-
-<details>
-  <summary>Here is how it should look when you're done</summary>
-
-  ![](gotify.png)
-
-</details>
-
-
