@@ -69,7 +69,9 @@ In short:
 
 <details>
   <summary>Here is how it should look when you're done</summary>
-  ![gotify](docs/gotify.png)
+
+  ![](docs/gotify.png)
+
 </details>
 
 
