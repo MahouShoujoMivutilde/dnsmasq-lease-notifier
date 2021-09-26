@@ -1,24 +1,22 @@
 # dnsmasq-lease-notifier
 
-Is a daemon that watches dnsmasq log for `DHCPACK` for unknown hosts and notifies you via [gotify](https://gotify.net).
+Is a script for dnsmasq's `--dhcp-script` option. Its porpupe is to notify you via [gotify](https://gotify) if some unknown (that is, not in `/etc/hosts` or `dhcp-host`) host requests an ip in your network.
 
 <img src="gotify.png" width="400">
 
 ## Dependencies:
-* [choose](https://github.com/theryangeary/choose)
-* [ripgrep](https://github.com/BurntSushi/ripgrep)
-* [gotify/cli](https://github.com/gotify/cli) (optional, for mobile notifications)
+* [gotify/cli](https://github.com/gotify/cli)
 * `http://standards-oui.ieee.org/oui/oui.txt` or [nmap](https://nmap.org) (optional, for vendor identification)
-* systemd (it watches `journalctl -f`) and `dnsmasq` (obviously)
 
 ## Options:
 
 The script is quite short, so i expect you to edit it appropriately if needed.
-However, you can set custom path to mac vendors files.
+
+Points of interest:
 
 ### `DNS_LEASE_WATCHER_OUI_DB`
 
-This is a path to the copy of http://standards-oui.ieee.org/oui/oui.txt, defaults to /usr/local/share/oui.txt
+This is a path to the copy of http://standards-oui.ieee.org/oui/oui.txt, defaults to `/usr/local/share/oui.txt`
 
 ```sh
 curl 'http://standards-oui.ieee.org/oui/oui.txt' | sudo tee /usr/local/share/oui.txt
@@ -30,7 +28,7 @@ Defaults to `/usr/share/nmap/nmap-mac-prefixes`
 
 If both present, `oui.txt` is preferred since it should be more up to date.
 
-## Service
+## Setup
 
 Download and install the script
 
@@ -40,26 +38,14 @@ curl -L \
   sudo tee /usr/local/bin/dnsmasq-lease-notifier.sh
 ```
 
-Download and install the service file
+Add
 
 ```sh
-curl -L \
-  'https://raw.githubusercontent.com/MahouShoujoMivutilde/dnsmasq-lease-notifier/master/dnsmasq-lease-notifier.service' |
-  sudo tee /etc/systemd/system/dnsmasq-lease-notifier.service
-```
-
-(Just in case)
-
-```
-systemctl daemon-reload
-```
-
-Enable and start the service
+dhcp-script=/usr/local/bin/dnsmasq-lease-notifier.sh
 
 ```
 
-systemctl enable --now dnsmasq-lease-notifier.service
-```
+to `/etc/dnsmasq.conf`
 
 ## Mobile notifications
 

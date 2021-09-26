@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
-# A script that watches dnsmasq's log via journalctl for new unknown hosts,
-# and sends notifications to stdout and gotify
+# A script that should be executed by dnsmsaq via `--dhcp-script` option.
+# It looks for unknown devices and sends notifications via gotify
 
 # depends:
 # - nmap (opt, for mac vendor lookup)
-# - ripgrep
-# - choose
-# - gotify/cli (opt)
+# - gotify/cli
 
 set -e
 
-
-
+# options:
 nmapdb="${DNS_LEASE_WATCHER_NMAP_DB:-/usr/share/nmap/nmap-mac-prefixes}"
 
 # curl http://standards-oui.ieee.org/oui/oui.txt | sudo tee /usr/local/share/oui.txt
 ouidb="${DNS_LEASE_WATCHER_OUI_DB:-/usr/local/share/oui.txt}"
 
+
+# see man dnsmasq, `dhcp-script`
+cmd="$1"
+mac="$2"
+IP="$3"
+hostname="$4" # relevant only for `known`
+
+# special tag `known` is set when the host matches one of the `dhcp-host` entries or is in /etc/ethers
+# hence we are looking for its absence
+echo "$DNSMASQ_TAGS" | grep -i -v -q 'known' || exit 0
+
+# we only care about `add` or `old`
+[ "$cmd" = 'del' ] && exit 0
+
+dt="$(date '+%b %d %H:%M:%S')"
 
 # ---
 
@@ -58,32 +70,23 @@ lookup_vendor() {
     echo "$vendor"
 }
 
-# Aug 27 20:21:14 pi dnsmasq-dhcp[26306]: DHCPACK(lan0) <lan_ip> <MAC>
-process() {
-    local IP="$(echo "$1" | choose -2)"
-    local mac="$(echo "$1" | choose -1)"
-    local vendor="$(lookup_vendor "$mac")"
-    local dt="$(echo "$1" | choose :2)"
+vendor="$(lookup_vendor "$mac")"
 
-    printf "%s: new unknown device: %s %s (%s)\n" \
-        "$dt" \
-        "$IP" \
-        "$mac" \
-        "$vendor"
+out="$dt: new device: $IP"
 
-    if command -v gotify >/dev/null; then
-        printf "%s: new unknown device: %s %s (%s)\n" \
-            "$dt" \
-            "$IP" \
-            "$mac" \
-            "$vendor" | gotify push
-    fi
-}
+if [ -n "$DNSMASQ_SUPPLIED_HOSTNAME" ]; then
+    out="$out supplied host: $DNSMASQ_SUPPLIED_HOSTNAME;"
+fi
 
-journalctl -f -u dnsmasq |
-    # ignores known hosts
-    rg --line-buffered 'DHCPACK.+ \d+\.\d+\.\d+\.\d+\s([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$' |
-    while read -r unknown; do
-        echo "$unknown"
-        process "$unknown"
-    done
+if [ -n "$DNSMASQ_VENDOR_CLASS" ]; then
+    out="$out class: $DNSMASQ_VENDOR_CLASS;"
+fi
+
+out="$out $mac ($vendor)"
+
+
+echo "$out"
+
+if command -v gotify >/dev/null; then
+    echo "$out" | gotify push
+fi
