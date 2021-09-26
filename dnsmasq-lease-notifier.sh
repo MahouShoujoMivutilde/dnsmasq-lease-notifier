@@ -23,10 +23,14 @@ hostname="$4" # relevant only for `known`
 
 # special tag `known` is set when the host matches one of the `dhcp-host` entries or is in /etc/ethers
 # hence we are looking for its absence
-echo "$DNSMASQ_TAGS" | grep -i -v -q 'known' || exit 0
+if [[ "$DNSMASQ_TAGS" =~ known ]] || [ -z "$DNSMASQ_TAGS" ]; then
+    exit 0
+fi
 
 # we only care about `add` or `old`
-[ "$cmd" = 'del' ] && exit 0
+if [ "$cmd" = 'del' ]; then
+    exit 0
+fi
 
 dt="$(date '+%b %d %H:%M:%S')"
 
