@@ -1,6 +1,6 @@
 # dnsmasq-lease-notifier
 
-Is a script for dnsmasq's `--dhcp-script` option. Its purpose is to notify you via [gotify](https://gotify) if some unknown (that is, not in `/etc/hosts` or `dhcp-host`) host requests an ip in your network.
+Is a script for dnsmasq's `--dhcp-script` option. Its purpose is to notify you via [gotify](https://gotify.net/) if some unknown (that is, not in `/etc/hosts` or `dhcp-host`) host requests an ip in your network.
 
 <img src="gotify.png" width="400">
 
