@@ -6,6 +6,7 @@ Is a script for dnsmasq's `--dhcp-script` option. Its purpose is to notify you v
 
 ## Dependencies:
 * [gotify/cli](https://github.com/gotify/cli)
+* [choose](https://github.com/theryangeary/choose)
 * `http://standards-oui.ieee.org/oui/oui.txt` or [nmap](https://nmap.org) (optional, for vendor identification)
 
 ## Options:
