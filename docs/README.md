@@ -1,13 +1,13 @@
 # dnsmasq-lease-notifier
 
-Is a script for dnsmasq's `--dhcp-script` option. Its purpose is to notify you via [gotify](https://gotify.net/) if some unknown (that is, not in `/etc/hosts` or `dhcp-host`) host requests an ip in your network.
+Is a script for dnsmasq's `--dhcp-script` option. Its purpose is to notify you via [gotify](https://gotify.net/) if some unknown (that is, not in `/etc/hosts` or `dhcp-host`) host requests an ip in your network. Can be easily edited to deliver notifications over something else, e.g. [apprise](https://github.com/caronc/apprise).
 
 <img src="gotify.png" width="400">
 
 ## Dependencies:
 * [gotify/cli](https://github.com/gotify/cli)
 * [choose](https://github.com/theryangeary/choose) and [ripgrep](https://github.com/BurntSushi/ripgrep)
-* `http://standards-oui.ieee.org/oui/oui.txt` or [nmap](https://nmap.org) (optional, for vendor identification)
+* `https://standards-oui.ieee.org/oui/oui.txt` or [nmap](https://nmap.org) (optional, for vendor identification)
 
 ## Options:
 
@@ -17,10 +17,10 @@ Points of interest:
 
 ### `DNS_LEASE_WATCHER_OUI_DB`
 
-This is a path to the copy of http://standards-oui.ieee.org/oui/oui.txt, defaults to `/usr/local/share/oui.txt`
+This is a path to the copy of https://standards-oui.ieee.org/oui/oui.txt, defaults to `/usr/local/share/oui.txt`
 
 ```sh
-curl 'http://standards-oui.ieee.org/oui/oui.txt' | sudo tee /usr/local/share/oui.txt
+curl -L 'https://standards-oui.ieee.org/oui/oui.txt' | sudo tee /usr/local/share/oui.txt
 ```
 
 ### `DNS_LEASE_WATCHER_NMAP_DB`
